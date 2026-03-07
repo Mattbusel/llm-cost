@@ -170,19 +170,20 @@ cmake --build build
 
 ## See Also
 
-`llm-cost` is part of the **C++ LLM Toolkit Suite** — single-header libraries that
-compose into a full LLM integration stack:
-
 | Repo | What it does |
 |------|-------------|
 | [llm-stream](https://github.com/Mattbusel/llm-stream) | Stream OpenAI & Anthropic responses via SSE |
-| **llm-cost** | Token counting + cost estimation (this repo) |
-| [llm-cache](https://github.com/Mattbusel/llm-cache) | Exact & semantic response caching |
-| [llm-retry](https://github.com/Mattbusel/llm-retry) | Retry logic + circuit breaker |
-| [llm-format](https://github.com/Mattbusel/llm-format) | Structured output / JSON schema enforcement |
-
-All libraries follow the same conventions: single header, C++17, `namespace llm`,
-`#ifdef *_IMPLEMENTATION` guard, zero heavy dependencies.
+| [llm-cache](https://github.com/Mattbusel/llm-cache) | LRU response cache |
+| **llm-cost** *(this repo)* | Token counting + cost estimation |
+| [llm-retry](https://github.com/Mattbusel/llm-retry) | Retry + circuit breaker |
+| [llm-format](https://github.com/Mattbusel/llm-format) | Structured output / JSON schema |
+| [llm-embed](https://github.com/Mattbusel/llm-embed) | Embeddings + vector search |
+| [llm-pool](https://github.com/Mattbusel/llm-pool) | Concurrent request pool |
+| [llm-log](https://github.com/Mattbusel/llm-log) | Structured JSONL logging |
+| [llm-template](https://github.com/Mattbusel/llm-template) | Prompt templating |
+| [llm-agent](https://github.com/Mattbusel/llm-agent) | Tool-calling agent loop |
+| [llm-rag](https://github.com/Mattbusel/llm-rag) | RAG pipeline |
+| [llm-eval](https://github.com/Mattbusel/llm-eval) | Evaluation + consistency scoring |
 
 ---
 

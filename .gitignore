@@ -33,3 +33,4 @@ Makefile
 # Secrets
 .env
 *.env
+build*/
