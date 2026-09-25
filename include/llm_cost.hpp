@@ -1,6 +1,6 @@
 #pragma once
 
-// llm_cost.hpp — Zero-dependency single-header C++ token counter and cost estimator.
+// llm_cost.hpp: Zero-dependency single-header C++ token counter and cost estimator.
 // Supports OpenAI and Anthropic models. No network calls. No external deps.
 //
 // USAGE:
@@ -41,15 +41,30 @@ struct Model {
 };
 
 // ---------------------------------------------------------------------------
-// Built-in model registry (compile-time constants)
+// Built-in model registry
+//
+// Prices are USD per 1K tokens at each provider's standard (non-batch,
+// non-cached) rate, checked on 2026-09-25 against:
+//   https://platform.claude.com/docs/en/about-claude/pricing
+//   https://platform.claude.com/docs/en/about-claude/models/overview
+//   https://developers.openai.com/api/docs/pricing
+// Prices change; re-check those pages or define your own llm::Model.
 // ---------------------------------------------------------------------------
 namespace models {
-    inline const Model GPT4O         = {"gpt-4o",                 Provider::OpenAI,    0.005,   0.015,   128000};
+    // OpenAI
+    inline const Model GPT6_ASTRA    = {"gpt-6-astra",            Provider::OpenAI,    0.010,   0.050,   1050000};
+    inline const Model GPT6_SOL      = {"gpt-6-sol",              Provider::OpenAI,    0.002,   0.010,   1050000};
+    inline const Model GPT6_LUNA     = {"gpt-6-luna",             Provider::OpenAI,    0.0001,  0.0005,  1050000};
+    inline const Model GPT4O         = {"gpt-4o",                 Provider::OpenAI,    0.0025,  0.010,   128000};
     inline const Model GPT4O_MINI    = {"gpt-4o-mini",            Provider::OpenAI,    0.00015, 0.0006,  128000};
     inline const Model GPT4_TURBO    = {"gpt-4-turbo",            Provider::OpenAI,    0.01,    0.03,    128000};
-    inline const Model CLAUDE_OPUS   = {"claude-opus-4-5",        Provider::Anthropic, 0.015,   0.075,   200000};
+    // Anthropic
+    inline const Model CLAUDE_FABLE_5_1 = {"claude-fable-5-1",    Provider::Anthropic, 0.010,   0.050,   1000000};
+    inline const Model CLAUDE_OPUS_5_5  = {"claude-opus-5-5",     Provider::Anthropic, 0.004,   0.020,   1000000};
+    inline const Model CLAUDE_SONNET_5  = {"claude-sonnet-5",     Provider::Anthropic, 0.002,   0.010,   1000000};
+    inline const Model CLAUDE_OPUS   = {"claude-opus-4-5",        Provider::Anthropic, 0.005,   0.025,   200000};
     inline const Model CLAUDE_SONNET = {"claude-sonnet-4-5",      Provider::Anthropic, 0.003,   0.015,   200000};
-    inline const Model CLAUDE_HAIKU  = {"claude-haiku-4-5",       Provider::Anthropic, 0.00025, 0.00125, 200000};
+    inline const Model CLAUDE_HAIKU  = {"claude-haiku-4-5",       Provider::Anthropic, 0.001,   0.005,   200000};
 } // namespace models
 
 /// Result of a token counting operation.
@@ -78,8 +93,8 @@ struct CostComparison {
 /// code, numbers, and non-ASCII. Accuracy is approximately ±5% vs tiktoken.
 ///
 /// # Arguments
-/// * `text`  — The string to analyse
-/// * `model` — Model to price against
+/// * `text`: The string to analyse
+/// * `model`: Model to price against
 ///
 /// # Panics
 /// This function never panics.
@@ -89,8 +104,8 @@ TokenCount count(const std::string& text, const Model& model);
 /// Adds per-message overhead (role tokens + 4 tokens/message, as OpenAI does).
 ///
 /// # Arguments
-/// * `messages` — Vector of {role, content} pairs
-/// * `model`    — Model to price against
+/// * `messages`: Vector of {role, content} pairs
+/// * `model`: Model to price against
 ///
 /// # Panics
 /// This function never panics.
@@ -110,7 +125,7 @@ void assert_budget(const TokenCount& tc, double budget_usd);
 /// Results are sorted cheapest-first.
 ///
 /// # Arguments
-/// * `text` — The prompt to price across all models
+/// * `text`: The prompt to price across all models
 ///
 /// # Panics
 /// This function never panics.
@@ -200,7 +215,7 @@ static size_t estimate_tokens(std::string_view text) {
             continue;
         }
 
-        // Non-ASCII (multi-byte UTF-8): conservative — 1 token per 2 bytes
+        // Non-ASCII (multi-byte UTF-8): conservative, 1 token per 2 bytes
         if (c >= 0x80) {
             size_t start = i;
             while (i < n && static_cast<unsigned char>(text[i]) >= 0x80) ++i;
@@ -209,7 +224,7 @@ static size_t estimate_tokens(std::string_view text) {
             continue;
         }
 
-        // Single ASCII punctuation / symbol — 1 token each
+        // Single ASCII punctuation / symbol: 1 token each
         ++tokens;
         ++i;
     }
@@ -223,16 +238,22 @@ static size_t estimate_tokens(std::string_view text) {
 
 static const Model& all_models_array(size_t idx) {
     static const Model arr[] = {
+        models::GPT6_ASTRA,
+        models::GPT6_SOL,
+        models::GPT6_LUNA,
         models::GPT4O,
         models::GPT4O_MINI,
         models::GPT4_TURBO,
+        models::CLAUDE_FABLE_5_1,
+        models::CLAUDE_OPUS_5_5,
+        models::CLAUDE_SONNET_5,
         models::CLAUDE_OPUS,
         models::CLAUDE_SONNET,
         models::CLAUDE_HAIKU,
     };
     return arr[idx];
 }
-static constexpr size_t ALL_MODELS_COUNT = 6;
+static constexpr size_t ALL_MODELS_COUNT = 12;
 
 } // namespace detail
 

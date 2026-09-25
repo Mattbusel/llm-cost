@@ -15,7 +15,7 @@ Surprise API bills usually come from prompts that were bigger than anyone though
 
 - Token estimate for a string or a chat message list (adds per-message overhead the way OpenAI counts it)
 - Input cost in USD and a flag when the prompt exceeds the model's context window
-- Six built-in models: `gpt-4o`, `gpt-4o-mini`, `gpt-4-turbo`, `claude-opus-4-5`, `claude-sonnet-4-5`, `claude-haiku-4-5`
+- Twelve built-in models with prices checked on 2026-09-25: `gpt-6-astra`, `gpt-6-sol`, `gpt-6-luna`, `gpt-4o`, `gpt-4o-mini`, `gpt-4-turbo`, `claude-fable-5-1`, `claude-opus-5-5`, `claude-sonnet-5`, `claude-opus-4-5`, `claude-sonnet-4-5`, `claude-haiku-4-5`
 - `compare_costs()`: the same prompt priced across all built-in models, cheapest first
 - `assert_budget()`: throw before a call that would cost more than your limit
 - `format_cost()`: human-readable dollars or cents
@@ -39,7 +39,7 @@ int main() {
     llm::TokenCount tc = llm::count(prompt, llm::models::GPT4O_MINI);
     std::cout << tc.tokens << " tokens, " << llm::format_cost(tc.estimated_cost_usd) << "\n";
 
-    // Cheapest first, across the six built-in models
+    // Cheapest first, across the twelve built-in models
     for (const auto& c : llm::compare_costs(prompt))
         std::cout << c.model_name << ": " << llm::format_cost(c.input_cost_usd) << "\n";
 
@@ -54,16 +54,22 @@ g++ -std=c++17 -I include example.cpp -o example
 ./example
 ```
 
-Output:
+Output (MSVC 2022 build, run 2026-09-25):
 
 ```text
 22 tokens, 0.0003¢
+gpt-6-luna: 0.0002¢
 gpt-4o-mini: 0.0003¢
-claude-haiku-4-5: 0.0006¢
+claude-haiku-4-5: 0.0022¢
+gpt-6-sol: 0.0044¢
+claude-sonnet-5: 0.0044¢
+gpt-4o: 0.0055¢
 claude-sonnet-4-5: 0.0066¢
-gpt-4o: 0.0110¢
+claude-opus-5-5: 0.0088¢
+claude-opus-4-5: 0.0110¢
+gpt-6-astra: 0.0220¢
 gpt-4-turbo: 0.0220¢
-claude-opus-4-5: 0.0330¢
+claude-fable-5-1: 0.0220¢
 ```
 
 ## API
@@ -100,8 +106,8 @@ cmake --build build
 
 ## Limitations
 
-- Token counts are estimates, not exact tokenizer output, and the same heuristic is used for Anthropic models.
-- Prices are hardcoded in the header and change over time; check them against the providers' current pricing or define your own `Model`.
+- Token counts are estimates, not exact tokenizer output, and the same heuristic is used for Anthropic models. Anthropic says Claude Opus 4.7 and later use a tokenizer that produces roughly 30% more tokens for the same text, so estimates for those models run low.
+- Prices are hardcoded in the header (standard, non-batch, non-cached rates, checked 2026-09-25 against [Anthropic's](https://platform.claude.com/docs/en/about-claude/pricing) and [OpenAI's](https://developers.openai.com/api/docs/pricing) pricing pages). They change over time; re-check them or define your own `Model`.
 - Only input cost is estimated, since output length is unknown before the call.
 
 ## License
