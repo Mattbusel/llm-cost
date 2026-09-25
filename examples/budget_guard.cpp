@@ -19,9 +19,9 @@ int main() {
 
     try {
         assert_budget(tc_cheap, 0.01);
-        std::cout << "Result:     ALLOWED — within budget\n\n";
+        std::cout << "Result:     ALLOWED, within budget\n\n";
     } catch (const std::runtime_error& e) {
-        std::cout << "Result:     BLOCKED — " << e.what() << "\n\n";
+        std::cout << "Result:     BLOCKED: " << e.what() << "\n\n";
     }
 
     // --- Scenario 2: huge prompt that blows the budget ---
@@ -39,7 +39,7 @@ int main() {
         assert_budget(tc_expensive, 0.05);
         std::cout << "Result:     ALLOWED\n\n";
     } catch (const std::runtime_error& e) {
-        std::cout << "Result:     BLOCKED — " << e.what() << "\n\n";
+        std::cout << "Result:     BLOCKED: " << e.what() << "\n\n";
     }
 
     // --- Scenario 3: multi-turn chat budget check ---
@@ -62,7 +62,7 @@ int main() {
         assert_budget(tc_chat, 0.001);
         std::cout << "Result:     ALLOWED\n";
     } catch (const std::runtime_error& e) {
-        std::cout << "Result:     BLOCKED — " << e.what() << "\n";
+        std::cout << "Result:     BLOCKED: " << e.what() << "\n";
     }
 
     return 0;
